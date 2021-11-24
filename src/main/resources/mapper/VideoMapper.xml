@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.demo.mapper.VideoMapper">
+
+
+    <resultMap id="videoList" type="Video">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="summary" property="summary" jdbcType="VARCHAR"/>
+        <result column="cover_img" property="coverImg" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="price" jdbcType="INTEGER" property="price"/>
+        <result column="point" property="point" jdbcType="DOUBLE"/>
+
+        <collection property="chapterList" ofType="Chapter">
+            <id column="chapter_id" property="id" jdbcType="INTEGER"/>
+            <result column="chapter_title" property="title" jdbcType="VARCHAR"/>
+            <result column="chapter_create_time" property="createTime" jdbcType="TIMESTAMP"/>
+            <result column="ordered" property="ordered" jdbcType="INTEGER"/>
+
+            <collection property="episodeList" ofType="episode">
+                <id column="episode_id" property="id" jdbcType="INTEGER"/>
+                <result column="num" property="num" jdbcType="INTEGER"/>
+                <result column="episode_title" property="title" jdbcType="VARCHAR"/>
+                <result column="episode_ordered" property="ordered" jdbcType="INTEGER"/>
+                <result column="play_url" property="playUrl" jdbcType="VARCHAR"/>
+                <result column="free" property="free" jdbcType="INTEGER"/>
+                <result column="episode_create_time" property="createTime" jdbcType="TIMESTAMP"/>
+
+            </collection>
+
+        </collection>
+
+    </resultMap>
+
+    <select id="listVideo" resultMap="videoList">
+
+        SELECT
+        v.id,v.title,v.cover_img,v.summary,v.create_time,v.point,v.price,
+        c.id as chapter_id,c.create_time as chapter_create_time,c.ordered,c.title as chapter_title,
+        e.id as episode_id,e.create_time as episode_create_time,e.free,e.num,e.ordered as episode_ordered,e.play_url,e.title as episode_title
+        FROM video v
+        LEFT JOIN chapter c on v.id=c.video_id
+        LEFT JOIN episode e on c.id=e.chapter_id
+        ORDER BY v.id ASC
+
+    </select>
+
+    <select id="listBanner" resultType="VideoBanner">
+
+        select * from video_banner order by weight asc
+
+    </select>
+
+    <select id="findById" resultType="Video">
+
+        select * from video where id = #{video_id}
+
+    </select>
+
+
+    <resultMap id="VideoDetailResultMap" type="Video">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="summary" property="summary" jdbcType="VARCHAR"/>
+        <result column="cover_img" property="coverImg" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="price" jdbcType="INTEGER" property="price"/>
+        <result column="point" property="point" jdbcType="DOUBLE"/>
+
+        <collection property="chapterList" ofType="Chapter">
+            <id column="chapter_id" property="id" jdbcType="INTEGER"/>
+            <result column="chapter_title" property="title" jdbcType="VARCHAR"/>
+            <result column="chapter_create_time" property="createTime" jdbcType="TIMESTAMP"/>
+            <result column="ordered" property="ordered" jdbcType="INTEGER"/>
+
+            <collection property="episodeList" ofType="episode">
+                <id column="episode_id" property="id" jdbcType="INTEGER"/>
+                <result column="num" property="num" jdbcType="INTEGER"/>
+                <result column="episode_title" property="title" jdbcType="VARCHAR"/>
+                <result column="episode_ordered" property="ordered" jdbcType="INTEGER"/>
+                <result column="play_url" property="playUrl" jdbcType="VARCHAR"/>
+                <result column="free" property="free" jdbcType="INTEGER"/>
+                <result column="episode_create_time" property="createTime" jdbcType="TIMESTAMP"/>
+
+            </collection>
+
+        </collection>
+
+    </resultMap>
+
+    <select id="findDetailById" resultMap="VideoDetailResultMap">
+
+        SELECT
+        v.id,v.title,v.cover_img,v.summary,v.create_time,v.point,v.price,
+        c.id as chapter_id,c.create_time as chapter_create_time,c.ordered,c.title as chapter_title,
+        e.id as episode_id,e.create_time as episode_create_time,e.free,e.num,e.ordered as episode_ordered,e.play_url,e.title as episode_title
+        FROM video v
+        LEFT JOIN chapter c on v.id=c.video_id
+        LEFT JOIN episode e on c.id=e.chapter_id
+        WHERE v.id = #{video_id}
+        ORDER BY c.ordered,e.num ASC
+    </select>
+
+</mapper>
